@@ -159,6 +159,12 @@ int main(int argc, char* argv[])
 
     bool voltage_show = false, current_show = false, temperature_show = false, temperature_show_max = true;
     int ch;
+    int interval = 1000000;
+
+    if (argc > 1) {
+        interval = atoi(argv[1]) * 1000000;
+        optind++;
+    }
 
     while ((ch = getopt(argc, argv, "cv")) != -1) {
         switch (ch) {
@@ -246,7 +252,7 @@ int main(int argc, char* argv[])
         CFRelease(thermalValues);
 
         // sleep 1 second
-        usleep(1000000);
+        usleep(interval);
     }
 
     return 0;
