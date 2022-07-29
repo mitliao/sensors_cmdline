@@ -246,6 +246,7 @@ int main(int argc, char* argv[])
             dumpMaxValues(sortedThermal);
         }
         printf("\n");
+        fflush(stdout);
 
         CFRelease(currentValues);
         CFRelease(voltageValues);
