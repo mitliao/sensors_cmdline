@@ -98,6 +98,21 @@ NSArray* getThermalValues(NSDictionary* sensors)
     return array;
 }
 
+void dumpMaxValues(NSArray* kvs)
+{
+    int count = [kvs count];
+    double max = 0.0;
+    for (int i = 0; i < count; i++) {
+        if ([[kvs[i] firstObject] rangeOfString:@"ACC"].location != NSNotFound) {
+            if ([[kvs[i] lastObject] doubleValue] > max) {
+                max = [[kvs[i] lastObject] doubleValue];
+            }
+            //printf("%lf", [[kvs[i] lastObject] doubleValue]);
+        }
+    }
+    printf("%dC", (int)max);
+}
+
 void dumpValues(NSArray* kvs)
 {
     int count = [kvs count];
@@ -142,16 +157,20 @@ void usage()
 int main(int argc, char* argv[])
 {
 
-    bool voltage_show = false, current_show = false, temperature_show = true;
+    bool voltage_show = false, current_show = false, temperature_show = false, temperature_show_max = true;
     int ch;
 
     while ((ch = getopt(argc, argv, "cv")) != -1) {
         switch (ch) {
         case 'v':
             voltage_show = true;
+            temperature_show = true;
+            temperature_show_max = false;
             break;
         case 'c':
             current_show = true;
+            temperature_show = true;
+            temperature_show_max = false;
             break;
         default:
             usage();
@@ -181,7 +200,7 @@ int main(int argc, char* argv[])
     NSArray* voltageNames = getProductNames(voltageSensors);
     NSArray* thermalNames = getProductNames(thermalSensors);
 
-    bool shown = false;
+    bool shown = (temperature_show_max) ? true : false;
     while (1) {
         NSArray* currentValues = getPowerValues(currentSensors);
         NSArray* voltageValues = getPowerValues(voltageSensors);
@@ -216,6 +235,9 @@ int main(int argc, char* argv[])
         }
         if (temperature_show) {
             dumpValues(sortedThermal);
+        }
+        if (temperature_show_max) {
+            dumpMaxValues(sortedThermal);
         }
         printf("\n");
 
